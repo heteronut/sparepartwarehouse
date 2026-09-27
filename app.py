@@ -4,6 +4,16 @@ Run with: streamlit run app.py
 """
 import streamlit as st
 from database import init_db
+import pages.dashboard    as _pg_dashboard
+import pages.spare_parts  as _pg_spare_parts
+import pages.transactions as _pg_transactions
+import pages.stock_alert  as _pg_stock_alert
+import pages.analytics    as _pg_analytics
+import pages.stock_opname as _pg_stock_opname
+import pages.maintenance  as _pg_maintenance
+import pages.suppliers    as _pg_suppliers
+import pages.reports      as _pg_reports
+import pages.chatbot      as _pg_chatbot
 
 # ── page config ────────────────────────────────────────────
 st.set_page_config(
@@ -119,33 +129,24 @@ with st.sidebar:
     """, unsafe_allow_html=True)
 
 # ── Route to page ───────────────────────────────────────────
+_PAGE_MAP = {
+    "dashboard":    _pg_dashboard,
+    "spare_parts":  _pg_spare_parts,
+    "transactions": _pg_transactions,
+    "stock_alert":  _pg_stock_alert,
+    "analytics":    _pg_analytics,
+    "stock_opname": _pg_stock_opname,
+    "maintenance":  _pg_maintenance,
+    "suppliers":    _pg_suppliers,
+    "reports":      _pg_reports,
+    "chatbot":      _pg_chatbot,
+}
+
 page_key = st.session_state.get("active_page", "dashboard")
+page_module = _PAGE_MAP.get(page_key, _pg_dashboard)
 
 try:
-    if page_key == "dashboard":
-        from pages.dashboard    import render
-    elif page_key == "spare_parts":
-        from pages.spare_parts  import render
-    elif page_key == "transactions":
-        from pages.transactions import render
-    elif page_key == "stock_alert":
-        from pages.stock_alert  import render
-    elif page_key == "analytics":
-        from pages.analytics    import render
-    elif page_key == "stock_opname":
-        from pages.stock_opname import render
-    elif page_key == "maintenance":
-        from pages.maintenance  import render
-    elif page_key == "suppliers":
-        from pages.suppliers    import render
-    elif page_key == "reports":
-        from pages.reports      import render
-    elif page_key == "chatbot":
-        from pages.chatbot      import render
-    else:
-        from pages.dashboard    import render
-
-    render()
+    page_module.render()
 except Exception as e:
     st.error(f"❌ Error memuat halaman: {e}")
     st.exception(e)
